@@ -16,7 +16,16 @@ const ESP32_CLIENT_ID = 'esp32-cam-01'
 
 function getClientId(): string {
   let id = localStorage.getItem('client_id')
-  if (!id) { id = crypto.randomUUID(); localStorage.setItem('client_id', id) }
+  if (!id) { 
+    // Cek apakah browser mengizinkan crypto.randomUUID (HTTPS/Localhost)
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      id = crypto.randomUUID();
+    } else {
+      // Fallback untuk akses via IP (HTTP) pada jaringan lokal
+      id = 'client-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+    localStorage.setItem('client_id', id) 
+  }
   return id
 }
 

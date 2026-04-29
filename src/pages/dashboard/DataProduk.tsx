@@ -203,7 +203,7 @@ export default function DataProduk() {
 // ─── Pagination sub-component ──────────────────────────────
 function Pagination({ page, totalPages, rows, total, first, shown, setPage, setRows }:
   { page:number; totalPages:number; rows:number; total:number; first:number; shown:number
-    setPage:(n:number)=>void; setRows:(n:number)=>void }) {
+    setPage: React.Dispatch<React.SetStateAction<number>>; setRows:(n:number)=>void }) {
 
   const pages = Array.from({ length: totalPages }, (_, i) => i+1)
 

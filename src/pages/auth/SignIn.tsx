@@ -28,6 +28,11 @@ export default function SignIn() {
       storage.setItem('token',      data.token)
       storage.setItem('user_email', data.email)
       storage.setItem('user_role',  data.role)
+
+      // Clear the other storage to avoid conflicts
+      if (remember) sessionStorage.removeItem('token')
+      else          localStorage.removeItem('token')
+
       navigate('/dashboard')
     } catch {
       setError('Tidak dapat terhubung ke server')
