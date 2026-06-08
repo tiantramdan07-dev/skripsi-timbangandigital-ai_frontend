@@ -19,36 +19,46 @@ async function triggerRawBTPrint(
   total_harga: number
 ): Promise<{ ok: boolean; msg: string }> {
   try {
-    const formatRp = (num: number) =>
-      "Rp" + num.toLocaleString("id-ID");
+    const formatRp = (num: number) => 'Rp' + num.toLocaleString('id-ID')
+    const now      = new Date()
+    const timeStr  = now.toLocaleTimeString('id-ID', { hour12: false })
+    const dateStr  = now.toLocaleDateString('id-ID', {
+      day: '2-digit', month: '2-digit', year: '2-digit',
+    })
 
-    // Format struk (SAMA seperti test kamu)
-    let struk = "";
-    struk += "------------------------------\n";
-    struk += `PRODUK : ${nama_produk}\n`;
-    struk += `BERAT  : ${berat_kg.toFixed(3)} kg\n`;
-    struk += `HARGA  : ${formatRp(harga_per_kg)}/kg\n`;
-    struk += "------------------------------\n";
-    struk += `TOTAL  : ${formatRp(total_harga)}\n`;
-    struk += "------------------------------\n";
-    struk += "   TERIMA KASIH\n\n\n";
+    const LEBAR = 30
+    const garis = '-'.repeat(LEBAR)
 
-    // Encode ke format RawBT TEXT
-    const encoded = encodeURIComponent(struk);
+    // Helper: tengah manual pakai spasi
+    const center = (text: string) => {
+      const pad = Math.floor((LEBAR - text.length) / 2)
+      return ' '.repeat(Math.max(pad, 0)) + text
+    }
 
-    // 🔥 PENTING: gunakan rawbt: (bukan rawbt://base64)
-    window.location.href = `rawbt:${encoded}`;
+    // Waktu kiri, tanggal kanan
+    const sisa       = LEBAR - timeStr.length - dateStr.length
+    const barisWaktu = timeStr + ' '.repeat(Math.max(sisa, 1)) + dateStr
 
-    return {
-      ok: true,
-      msg: "✅ Struk dikirim ke RawBT (mode text)",
-    };
+    let struk = ''
+    struk += center('PT INTERSKALA MANDIRI INDONESIA') + '\n'
+    struk += garis + '\n'
+    struk += `Buah  : ${nama_produk}\n`
+    struk += `Berat : ${berat_kg.toFixed(3)} Kg\n`
+    struk += `Harga : ${formatRp(harga_per_kg)}/kg\n`
+    struk += garis + '\n'
+    struk += `Total : ${formatRp(total_harga)}\n`
+    struk += garis + '\n'
+    // struk += center('TERIMA KASIH') + '\n'
+    // struk += '\n'
+    // struk += barisWaktu + '\n'
+    // struk += '\n\n'
+
+    window.location.href = `rawbt:${encodeURIComponent(struk)}`
+
+    return { ok: true, msg: '🖨️ Struk dikirim ke RawBT' }
   } catch (err) {
-    console.error(err);
-    return {
-      ok: false,
-      msg: "Gagal mencetak ke RawBT",
-    };
+    console.error(err)
+    return { ok: false, msg: 'Gagal mencetak ke RawBT' }
   }
 }
 
